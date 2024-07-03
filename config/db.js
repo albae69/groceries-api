@@ -11,7 +11,7 @@ const config = {
 
 // console.log('database config', config)
 
-const pool = new Pool(config)
+export const pool = new Pool(config)
 
 export const query = async (text, params, cb) => {
   const start = Date.now()
