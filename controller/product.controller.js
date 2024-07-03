@@ -14,7 +14,6 @@ const getAllProduct = async (req, res) => {
     )
 
     if (results.rows.length > 0) {
-      console.log(results.rows)
       res.json({
         success: true,
         message: 'Succesfully get all products',

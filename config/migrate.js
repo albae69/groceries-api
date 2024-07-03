@@ -40,7 +40,15 @@ await db
       user_id TEXT NOT NULL,
       FOREIGN KEY (product_id) REFERENCES product(product_id),
       FOREIGN KEY (user_id) REFERENCES users(id)
-    )
+    );
+
+    CREATE TABLE IF NOT EXISTS user_cart (
+      id TEXT PRIMARY KEY NOT NULL,
+      user_id TEXT NOT NULL,
+      product_id TEXT NOT NULL,
+      FOREIGN KEY (product_id) REFERENCES product(product_id),
+      FOREIGN KEY (user_id) REFERENCES users(id)
+    );
 
     `
   )
