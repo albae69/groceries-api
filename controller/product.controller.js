@@ -56,7 +56,7 @@ const createProduct = async (req, res) => {
   }
 }
 
-const getAllProductCategory = async (req, res) => {
+const getCategory = async (req, res) => {
   try {
     const results = await query('select * from category')
     if (results.rows.length) {
@@ -100,9 +100,54 @@ const createProductCategory = async (req, res, next) => {
   }
 }
 
+const searchProduct = async (req, res) => {
+  try {
+    const { product_name } = req?.query
+
+    const results = await query(
+      `select * from product where product_name ilike lower($1)`,
+      [`%${product_name}%`]
+    )
+
+    res.json({
+      success: true,
+      message: 'successfully get product data',
+      data: results.rows,
+    })
+  } catch (error) {
+    console.error('error while search product:', error)
+    res.status(500).send({
+      success: false,
+      message: 'something error',
+    })
+  }
+}
+
+const getProductByCategory = async (req, res) => {
+  try {
+    const { category_id } = req?.params
+
+    const results = await query(
+      'select * from product where category_id = $1',
+      [category_id]
+    )
+
+    res.json({
+      success: true,
+      message: 'success get product by category',
+      data: results.rows,
+    })
+  } catch (error) {
+    console.error('error while get product by category', error)
+    res.status(500).send({ success: false, message: 'Something wrong!' })
+  }
+}
+
 export {
   getAllProduct,
-  getAllProductCategory,
+  getCategory,
   createProductCategory,
   createProduct,
+  searchProduct,
+  getProductByCategory,
 }
