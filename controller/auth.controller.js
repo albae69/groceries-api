@@ -13,6 +13,7 @@ const login = async (req, res) => {
         success: false,
         message: 'All the fields is required!',
       })
+      return
     }
 
     // find user by email
@@ -31,11 +32,13 @@ const login = async (req, res) => {
           message: 'successfully logged in',
           data: { token: token },
         })
+        return
       } else {
         res.json({
           success: false,
           message: 'email or password is wrong!',
         })
+        return
       }
     }
   } catch (error) {

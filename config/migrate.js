@@ -21,7 +21,6 @@ await db
         updated_at timestamp default NOW()
     );
 
-
     CREATE TABLE IF NOT EXISTS product (
       product_id TEXT PRIMARY KEY NOT NULL,
       product_name TEXT,
@@ -46,10 +45,10 @@ await db
       id TEXT PRIMARY KEY NOT NULL,
       user_id TEXT NOT NULL,
       product_id TEXT NOT NULL,
-      FOREIGN KEY (product_id) REFERENCES product(product_id),
-      FOREIGN KEY (user_id) REFERENCES users(id)
+      qty NUMERIC,
+      FOREIGN KEY (user_id) REFERENCES users(id),
+      FOREIGN KEY (product_id) REFERENCES product(product_id)
     );
-
     `
   )
   .then((res) => {

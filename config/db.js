@@ -9,7 +9,7 @@ const config = {
   database: process.env.PG_DATABASE,
 }
 
-// console.log('database config', config)
+console.log('database config', config)
 
 export const pool = new Pool(config)
 

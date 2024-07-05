@@ -1,6 +1,5 @@
 import { query } from '../config/db.js'
 import { v4 as uuidv4 } from 'uuid'
-import fs from 'fs'
 
 const getAllProduct = async (req, res) => {
   try {
@@ -12,6 +11,30 @@ const getAllProduct = async (req, res) => {
       `select * from product p left join category c on p.category_id = c.category_id limit $1 offset $2`,
       [limit, offset]
     )
+
+    if (results.rows.length > 0) {
+      res.json({
+        success: true,
+        message: 'Succesfully get all products',
+        data: results.rows,
+      })
+    }
+  } catch (error) {
+    console.error('error while getAllProduct', error)
+    res.status(500).send({
+      success: false,
+      message: 'Something wrong!',
+    })
+  }
+}
+
+const getDetailProduct = async (req, res) => {
+  try {
+    const { id } = req.params ?? {}
+
+    const results = await query(`select * from product where product_id = $1`, [
+      id,
+    ])
 
     if (results.rows.length > 0) {
       res.json({
@@ -55,50 +78,6 @@ const createProduct = async (req, res) => {
   }
 }
 
-const getCategory = async (req, res) => {
-  try {
-    const results = await query('select * from category')
-    if (results.rows.length) {
-      res.json({
-        success: true,
-        message: 'Successfully get product category data',
-        data: results.rows,
-      })
-    }
-  } catch (error) {
-    console.error('error while getAllProductCategory', error)
-    res.status(500).send({
-      success: false,
-      message: 'Something wrong!',
-    })
-  }
-}
-
-const createProductCategory = async (req, res, next) => {
-  try {
-    const uuid = uuidv4()
-    const { name } = req?.body
-    const image = req?.imageUrl
-
-    await query(
-      'insert into category(category_id,category_name,image_url) values($1,$2,$3)',
-      [uuid, name, image]
-    )
-
-    res.json({
-      success: true,
-      message: 'successfully create a category data',
-    })
-  } catch (error) {
-    console.error('error while createProductCategory', error)
-    fs.unlink(req?.imageUrl, (err) => console.log('err while unlink', err))
-    res.status(500).send({
-      success: false,
-      message: 'Something wrong!',
-    })
-  }
-}
-
 const searchProduct = async (req, res) => {
   try {
     const { product_name } = req?.query
@@ -122,31 +101,4 @@ const searchProduct = async (req, res) => {
   }
 }
 
-const getProductByCategory = async (req, res) => {
-  try {
-    const { category_id } = req?.params
-
-    const results = await query(
-      'select * from product where category_id = $1',
-      [category_id]
-    )
-
-    res.json({
-      success: true,
-      message: 'success get product by category',
-      data: results.rows,
-    })
-  } catch (error) {
-    console.error('error while get product by category', error)
-    res.status(500).send({ success: false, message: 'Something wrong!' })
-  }
-}
-
-export {
-  getAllProduct,
-  getCategory,
-  createProductCategory,
-  createProduct,
-  searchProduct,
-  getProductByCategory,
-}
+export { getAllProduct, getDetailProduct, createProduct, searchProduct }
