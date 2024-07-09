@@ -4,13 +4,30 @@ import { v4 as uuidv4 } from 'uuid'
 const getAllProduct = async (req, res) => {
   try {
     const { page, size } = req.params ?? {}
+    const { is_exclusive, is_best_selling } = req?.query ?? {}
+
     let limit = size ? parseInt(size, 10) : 10
     let offset = page ? (parseInt(page, 10) - 1) * limit : 0
 
-    const results = await query(
-      `select * from product p left join category c on p.category_id = c.category_id limit $1 offset $2`,
-      [limit, offset]
-    )
+    let results
+
+    if (is_exclusive) {
+      results = await query(
+        `select p.product_id ,product_name,description,image_url,price,is_exclusive  from product p inner join exclusive_product ep ON p.product_id = ep.product_id limit $1 offset $2`,
+        [limit, offset]
+      )
+    }
+    if (is_best_selling) {
+      results = await query(
+        `select p.product_id ,product_name,description,image_url,price,is_best_selling,sold_total  from product p inner join best_selling_product bsp ON p.product_id = bsp.product_id limit $1 offset $2`,
+        [limit, offset]
+      )
+    } else {
+      results = await query(
+        `select * from product p left join category c on p.category_id = c.category_id limit $1 offset $2`,
+        [limit, offset]
+      )
+    }
 
     if (results.rows.length > 0) {
       res.json({
@@ -36,11 +53,17 @@ const getDetailProduct = async (req, res) => {
       id,
     ])
 
-    if (results.rows.length > 0) {
+    if (results.rows) {
       res.json({
         success: true,
         message: 'Succesfully get all products',
         data: results.rows,
+      })
+    } else {
+      res.json({
+        success: true,
+        message: 'Succesfully get all products',
+        data: [],
       })
     }
   } catch (error) {

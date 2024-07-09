@@ -49,6 +49,21 @@ await db
       FOREIGN KEY (user_id) REFERENCES users(id),
       FOREIGN KEY (product_id) REFERENCES product(product_id)
     );
+
+    CREATE TABLE IF NOT EXISTS exclusive_product (
+      id TEXT PRIMARY KEY NOT NULL,
+      product_id TEXT NOT NULL,
+      is_exclusive boolean default false,
+      FOREIGN KEY (product_id) REFERENCES product(product_id)
+    );
+
+    CREATE TABLE IF NOT EXISTS best_selling_product(
+      id TEXT PRIMARY KEY NOT NULL,
+      product_id TEXT NOT NULL,
+      is_best_selling boolean default false,
+      sold_total NUMERIC default 0,
+      FOREIGN KEY (product_id) REFERENCES product(product_id) 
+    );
     `
   )
   .then((res) => {
